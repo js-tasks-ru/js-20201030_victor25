@@ -10,8 +10,8 @@ export function trimSymbols(string, size) {
         return string;
     }
 
-    let count = 0,
-        previus;
+    let count = 0;
+    let previus;
 
     return string.split('').map(current => {
             count = (current !== previus) ? 1 : count + 1;
