@@ -6,4 +6,16 @@
  */
 export function trimSymbols(string, size) {
 
+    if (size == undefined) {
+        return string;
+    }
+
+    let count = 0;
+    let previus;
+
+    return string.split('').map(current => {
+            count = (current !== previus) ? 1 : count + 1;
+            previus = current;
+            return (count <= size) ? current : '';
+        }).join('');
 }
