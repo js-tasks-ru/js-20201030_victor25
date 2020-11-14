@@ -42,17 +42,15 @@ export default class SortableTable {
     }
 
     getSubElements(element) {
-
         const elements = element.querySelectorAll('[data-element]');
         const subElements = {};
         [...elements].forEach(subElement => {
             subElements[subElement.dataset.element] = subElement;
         });
         return subElements;
-      }
+    }
 
     getTableHead(header) {
-
         return header.map(item => {
             return `
             <div class="sortable-table__cell" data-id="${item.id}" data-sortable="${item.sortable}">
@@ -63,7 +61,6 @@ export default class SortableTable {
     }
 
     getTableBody(data) {
-
         return data.map(rowData => {
             return `
             <a href="/products/3d-ochki-epson-elpgs03" class="sortable-table__row">
@@ -74,7 +71,6 @@ export default class SortableTable {
     }
 
     getRow(data) {
-
         return this._header.map(headerCell => {
             if (headerCell.template) {
                 return headerCell.template(data[headerCell.id]);
@@ -95,7 +91,6 @@ export default class SortableTable {
     }
 
     sort(fieldValue, orderValue = 'asc') {
-
         const headerCell = this._header.find(cell => {
             return cell.id === fieldValue;
         });
@@ -109,7 +104,6 @@ export default class SortableTable {
     }
 
     makeCompare(sortType, fieldValue, orderValue) {
-        
         const direction = this.getDirection(orderValue);
         const getter = this.createGetter(fieldValue);
 
@@ -128,18 +122,16 @@ export default class SortableTable {
     }
 
     getDirection(orderValue) {
-        let direction;
         switch (orderValue) {
             case 'asc':
-                direction = 1;
+                return 1;
                 break;
             case 'desc':
-                direction = -1;
+                return -1;
                 break;
             default:
                 throw new Error(`Wronge order value ${orderValue}`);
         }
-        return direction;
     }
 
     makeSorting(array, compare) {
@@ -147,9 +139,7 @@ export default class SortableTable {
     }
 
     createGetter(path) {
-   
         const pathKeys = path.split('.');
-        
         return function (obj) {
             return pathKeys.reduce((item, key) => { return item ? item[key] : item; }, obj);
         };
