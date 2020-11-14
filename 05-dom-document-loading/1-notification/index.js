@@ -6,6 +6,7 @@ const ERROR_NOTIFICATION_CLASSES = 'notification error';
 export default class NotificationMessage {
 
     static activeElement;
+    element;
     
     constructor(msg = '', {
         duration = 1000,
