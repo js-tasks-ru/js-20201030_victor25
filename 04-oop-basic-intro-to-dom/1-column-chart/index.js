@@ -1,7 +1,5 @@
 export default class ColumnChart {
 
-    
-
     constructor({   
         data = [],
         label = '',
@@ -16,7 +14,6 @@ export default class ColumnChart {
         this.chartHeight = 50;
 
         this.render();
-        this.initEventListeners();
     }
     
     render() {
@@ -91,10 +88,6 @@ export default class ColumnChart {
         valueElement.setAttribute('data-tooltip', this.calcPrecent(value, normValue));
         return valueElement;
     }
-
-    initEventListeners () {
-
-    }
     
     remove () {
         this.element.remove();
@@ -119,5 +112,3 @@ export default class ColumnChart {
     }
 
 }
-      
-

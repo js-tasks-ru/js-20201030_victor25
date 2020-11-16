@@ -1,7 +1,5 @@
 const SUCCESS_TYPE = 'success';
 const ERROR_TYPE = 'error';
-const SUCCESS_NOTIFICATION_CLASSES = 'notification success';
-const ERROR_NOTIFICATION_CLASSES = 'notification error';
 
 export default class NotificationMessage {
 
@@ -73,9 +71,9 @@ export default class NotificationMessage {
     getNotificationClasses () {
         switch (this._type) {
             case SUCCESS_TYPE:
-                return SUCCESS_NOTIFICATION_CLASSES;
+                return 'notification success';
             case ERROR_TYPE:
-                return ERROR_NOTIFICATION_CLASSES;
+                return 'notification error';
             default:
                 return '';
         }
