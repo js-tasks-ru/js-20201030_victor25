@@ -82,12 +82,15 @@ export default class SortableTable {
     }
 
     remove() {
-        this.element.remove();
+        if (this.element) {
+            this.element.remove();
+        }
     }
 
     destroy() {
         this.remove();
         this.subElements = {};
+        this.element = null;
     }
 
     sort(fieldValue, orderValue = 'asc') {
