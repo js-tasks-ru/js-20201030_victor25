@@ -6,8 +6,10 @@ export default class DoubleSlider {
     max;
     selected;
     selectedThumb;
-    _fromProcent;
-    _toProcent;
+    fromValueInPrecent;
+    toValueInPrecent;
+    leftBoundigPosition;
+    rightBoundingPosition;
 
     constructor({
         min = 10,
@@ -23,8 +25,8 @@ export default class DoubleSlider {
         this.selected = selected;
         this.formatValue = formatValue;
 
-        this._fromProcent = this.valueToProcent(this.selected.from, this.min, this.max);
-        this._toProcent = 100 - this.valueToProcent(this.selected.to, this.min, this.max);
+        this.fromValueInPrecent = this.toPrecent(this.selected.from, this.min, this.max);
+        this.toValueInPrecent = 100 - this.toPrecent(this.selected.to, this.min, this.max);
         this.render();
         this.initEventListeners();
     }
@@ -32,34 +34,18 @@ export default class DoubleSlider {
     get template() {
         return `
             <div class="range-slider">
-                <span data-element="from">${this.formatValue(this.selected.from)}</span>
+                <span data-element="from"></span>
                 <div data-element="iner" class="range-slider__inner">
-                    <span data-element="progress" class="range-slider__progress" style="left: ${this.fromProcent}%; right: ${this.toProcent}%"></span>
-                    <span data-element="thumbleft" class="range-slider__thumb-left" style="left: ${this.fromProcent}%"></span>
-                    <span data-element="thumbright" class="range-slider__thumb-right" style="right: ${this.toProcent}%"></span>
+                    <span data-element="progress" class="range-slider__progress"></span>
+                    <span data-element="thumbleft" class="range-slider__thumb-left"></span>
+                    <span data-element="thumbright" class="range-slider__thumb-right"></span>
                 </div>
-                <span data-element="to">${this.formatValue(this.selected.to)}</span>
+                <span data-element="to"></span>
             </div>
             `;
     }
 
-    get fromProcent() {
-        return this._fromProcent;
-    }
-
-    get toProcent() {
-        return this._toProcent;
-    }
-
-    get leftX () {
-        return this.subElements.iner.getBoundingClientRect().left;
-    }
-
-    get rightX () {
-        return this.subElements.iner.getBoundingClientRect().right;
-    }
-
-    valueToProcent(value, min, max) {
+    toPrecent(value, min, max) {
         return Math.round(((value - min) / (max - min)) * 100);
     }
 
@@ -87,6 +73,9 @@ export default class DoubleSlider {
     }
 
     handlePointerDown(event) {
+        this.leftBoundigPosition = 0;
+        this.rightBoundingPosition = this.subElements.iner.getBoundingClientRect().width;
+
         this.selectedThumb = event.target;
         event.preventDefault();
     }
@@ -94,22 +83,27 @@ export default class DoubleSlider {
     handlePointerMove(event) {
         if(this.selectedThumb === this.subElements.thumbleft) {
             this.subElements.from.innerHTML = this.formatValue(this.min);
-            this._fromProcent = Math.round(((event.clientX -  this.leftX) / ( this.rightX - this.leftX)) * 100);
-            this._fromProcent = (this._fromProcent > 100) ? 100 : (this._fromProcent < 0) ? 0 : this._fromProcent;
-            this.selected.from = this.min + Math.round(((this.max - this.min)*this._fromProcent)/100);
-            
-            this.subElements.from.innerHTML = this.formatValue(this.selected.from);
-            this.subElements.progress.style.left = this.fromProcent+'%';
-            this.subElements.thumbleft.style.left = this.fromProcent+'%';
+            this.fromValueInPrecent = 
+                Math.round(((event.clientX -  this.leftBoundigPosition) / ( this.rightBoundingPosition - this.leftBoundigPosition)) * 100);
+            this.fromValueInPrecent = (this.fromValueInPrecent > 100) ? 100 : (this.fromValueInPrecent < 0) ? 0 : this.fromValueInPrecent;
+            this.selected.from = this.min + Math.round(((this.max - this.min)*this.fromValueInPrecent)/100);
         } else if (this.selectedThumb === this.subElements.thumbright) {
-            this._toProcent = 100 - Math.round(((event.clientX -  this.leftX) / ( this.rightX - this.leftX)) * 100);
-            this._toProcent = (this._toProcent > 100) ? 100 : (this._toProcent < 0) ? 0 : this._toProcent;
-            this.selected.to =  100 - Math.round(((this.max - this.min)*this._toProcent)/100);
-            
-            this.subElements.to.innerHTML = this.formatValue(this.selected.to);
-            this.subElements.progress.style.right = this.toProcent+'%';
-            this.subElements.thumbright.style.right = this.toProcent+'%';
+            this.toValueInPrecent = 
+                100 - Math.round(((event.clientX -  this.leftBoundigPosition) / ( this.rightBoundingPosition - this.leftBoundigPosition)) * 100);
+            this.toValueInPrecent = (this.toValueInPrecent > 100) ? 100 : (this.toValueInPrecent < 0) ? 0 : this.toValueInPrecent;
+            this.selected.to =  this.max - Math.round(((this.max - this.min)*this.toValueInPrecent)/100);
         }
+        this.update();
+    }
+
+    update() {
+        this.subElements.from.innerHTML = this.formatValue(this.selected.from);
+        this.subElements.progress.style.left = this.fromValueInPrecent+'%';
+        this.subElements.thumbleft.style.left = this.fromValueInPrecent+'%';
+
+        this.subElements.to.innerHTML = this.formatValue(this.selected.to);
+        this.subElements.progress.style.right = this.toValueInPrecent+'%';
+        this.subElements.thumbright.style.right = this.toValueInPrecent+'%';
     }
 
     render() {
@@ -117,6 +111,7 @@ export default class DoubleSlider {
         element.innerHTML = this.template;
         this.element = element.firstElementChild;
         this.subElements = this.getSubElements(this.element);
+        this.update();
     }
 
     remove() {
